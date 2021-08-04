@@ -1,13 +1,17 @@
 package com.jama.carouselview;
 
 import android.content.Context;
+import android.graphics.PointF;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class CarouselLinearLayoutManager extends LinearLayoutManager {
 
+  private static final float MILLISECONDS_PER_INCH = 5f;
   private boolean isOffsetStart;
   private boolean scaleOnScroll = false;
 
@@ -54,6 +58,25 @@ public class CarouselLinearLayoutManager extends LinearLayoutManager {
     } else {
       return scrolled;
     }
+  }
+
+  @Override
+  public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+    final LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(recyclerView.getContext()) {
+
+      @Override
+      public PointF computeScrollVectorForPosition(int targetPosition) {
+        return super.computeScrollVectorForPosition(targetPosition);
+      }
+
+      @Override
+      protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+        return MILLISECONDS_PER_INCH / displayMetrics.densityDpi;
+      }
+    };
+
+    linearSmoothScroller.setTargetPosition(position);
+    startSmoothScroll(linearSmoothScroller);
   }
 
   void isOffsetStart(boolean isOffsetStart) {
